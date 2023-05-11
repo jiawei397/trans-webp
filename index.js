@@ -47,7 +47,22 @@ const storage = multer.diskStorage({
   }
 });
 
-const upload = multer({ storage });
+const upload = multer({
+  storage,
+  fileFilter: function (req, file, cb) {
+    const allowedFileTypes = /jpeg|jpg|png/; // 允许的文件类型
+    const extname = allowedFileTypes.test(path.extname(file.originalname).toLowerCase());
+    const mimetype = allowedFileTypes.test(file.mimetype);
+
+    if (mimetype && extname) {
+      // 验证通过，允许上传
+      cb(null, true);
+    } else {
+      // 验证不通过，拒绝上传
+      cb(new Error('只能上传jpeg、jpg、png格式的图片文件'));
+    }
+  }
+});
 
 // 处理文件上传的路由
 // 处理文件上传的路由
