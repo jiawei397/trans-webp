@@ -26,7 +26,7 @@
       border: 1px solid #ccc;
     }
 
-    input[type="submit"] {
+    .submit-button {
       padding: 10px 20px;
       font-size: 16px;
       background-color: #4CAF50;
@@ -35,17 +35,58 @@
       cursor: pointer;
     }
 
-    input[type="submit"]:hover {
+    .submit-button:hover {
       background-color: #45a049;
     }
+
+    .submit-button:disabled {
+      background-color: #ccc;
+      cursor: not-allowed;
+    }
   </style>
+  <script>
+    function validateForm() {
+      var fileInput = document.querySelector('input[type="file"]');
+      var file = fileInput.files[0];
+      if (!file) {
+        alert("必须上传一个图片文件");
+        return false
+      }
+      var allowedFileTypes = ['image/jpeg', 'image/jpg', 'image/png'];
+      var allowedExtensions = ['.jpeg', '.jpg', '.png'];
+      var fileMimeType = file.type;
+      var fileExtension = '.' + file.name.split('.').pop().toLowerCase();
+
+      if (!allowedFileTypes.includes(fileMimeType)) {
+        alert('只能上传 JPEG、JPG 和 PNG 格式的图片文件');
+        return false;
+      }
+
+      if (fileExtension === '.webp') {
+        alert('不允许上传 WebP 格式的图片');
+        return false;
+      }
+
+      return true;
+    }
+
+    function checkFileSelection() {
+      var fileInput = document.querySelector('input[type="file"]');
+      var uploadButton = document.querySelector(".submit-button");
+      if (fileInput.files.length === 0) {
+        uploadButton.disabled = true;
+      } else {
+        uploadButton.disabled = false;
+      }
+    }
+  </script>
 </head>
 
 <body>
   <h1>转换图片为WebP</h1>
-  <form method="post" action="/upload" enctype="multipart/form-data">
-    <input type="file" name="file" />
-    <input type="submit" value="转换" />
+  <form method="post" action="/upload" enctype="multipart/form-data" onsubmit="return validateForm()">
+    <input type="file" name="file" accept="image/jpeg, image/jpg, image/png" onchange="checkFileSelection()" />
+    <input class="submit-button" type="submit" value="转换" disabled />
   </form>
 </body>
 
