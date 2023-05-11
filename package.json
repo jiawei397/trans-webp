@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "PORT=3000 node index.js"
+    "dev": "PORT=3000 node index.js",
+    "pm2": "pm2 start --name trans-webp index.js"
   },
   "keywords": [],
   "author": "",
