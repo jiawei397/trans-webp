@@ -66,7 +66,7 @@ const upload = multer({
 
 // 处理文件上传的路由
 // 处理文件上传的路由
-app.post('/upload', upload.single('file'), (req, res) => {
+app.post('/upload', upload.single('file'), async (req, res) => {
   // 获取转换率
   const quality = parseInt(req.body.quality);
 
@@ -79,7 +79,7 @@ app.post('/upload', upload.single('file'), (req, res) => {
   // 获取文件的MD5值
   const inputFile = path.join(__dirname, req.file.path);
   const fileData = fs.readFileSync(inputFile);
-  const fileMD5 = md5(fileData);
+  const fileMD5 = md5(fileData) + "_" + quality;
 
   // 生成目标路径和文件名
   const destination = req.file.destination;
@@ -96,7 +96,7 @@ app.post('/upload', upload.single('file'), (req, res) => {
     return;
   }
   try {
-    webp.cwebp(inputFile, outputFile, "-q 80", logging = "-v");
+    await webp.cwebp(inputFile, outputFile, `-q ${quality}`, logging = "-v");
     console.info("转换文件完成: ", inputFile);
     const outProxyPath = outputPath.substring(uploadsPath.length + 1);
     const downloadUrl = `${req.protocol}://${req.hostname}:${port}/${outProxyPath}`;
