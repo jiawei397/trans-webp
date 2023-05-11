@@ -107,6 +107,12 @@ app.get('/download', (req, res) => {
   res.render('download', { downloadUrl });
 });
 
+// 错误处理程序
+app.use((err, req, res, next) => {
+  res.status(500).render('error', { errorMessage: err });
+});
+
+
 app.listen(port, () => {
   console.log('应用程序正在监听端口' + port);
 });
