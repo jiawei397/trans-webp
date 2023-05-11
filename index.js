@@ -5,6 +5,7 @@ const webp = require('webp-converter');
 // 引入EJS模板引擎
 const ejs = require('ejs');
 const fs = require("fs");
+const md5 = require('md5');
 
 webp.grant_permission();
 const app = express();
@@ -29,8 +30,6 @@ app.get('/', (req, res) => {
   });
 });
 
-
-
 // 设置存储文件的目录和文件名
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -50,26 +49,34 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage });
 
-
-
+// 处理文件上传的路由
 // 处理文件上传的路由
 app.post('/upload', upload.single('file'), (req, res) => {
-  // 转换为webp格式
+  // 获取文件的MD5值
   const inputFile = path.join(__dirname, req.file.path);
-  console.log("inputFile", inputFile, req.file);
+  const fileData = fs.readFileSync(inputFile);
+  const fileMD5 = md5(fileData);
+
+  // 生成目标路径和文件名
   const destination = req.file.destination;
-  const name = path.basename(req.file.originalname, path.extname(req.file.originalname));
-  const outputPath = `${destination}/${name}.webp`;
+  const originalName = path.basename(req.file.originalname, path.extname(req.file.originalname));
+  const outputPath = `${destination}/${originalName}_${fileMD5}.webp`;
   const outputFile = path.join(__dirname, outputPath);
+
+  // 检查目标路径是否存在相同的文件
+  if (fs.existsSync(outputFile)) {
+    console.log("文件已存在: ", outputFile);
+    const outProxyPath = outputPath.substring(uploadsPath.length + 1);
+    const downloadUrl = `${req.protocol}://${req.hostname}:${port}/${outProxyPath}`;
+    res.redirect(`/download?url=${encodeURIComponent(downloadUrl)}`);
+    return;
+  }
   try {
     webp.cwebp(inputFile, outputFile, "-q 80", logging = "-v");
     console.info("转换文件完成: ", inputFile);
-    // 使用download.ejs模板渲染页面，并提供下载链接
     const outProxyPath = outputPath.substring(uploadsPath.length + 1);
     const downloadUrl = `${req.protocol}://${req.hostname}:${port}/${outProxyPath}`;
-    // res.render('download', { downloadUrl });
     res.redirect(`/download?url=${encodeURIComponent(downloadUrl)}`);
-    // 删除临时文件
     setTimeout(() => {
       fs.unlinkSync(inputFile);
       fs.unlinkSync(outputFile);

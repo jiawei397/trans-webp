@@ -5,6 +5,24 @@
 <head>
   <meta charset="UTF-8">
   <title>WebP文件下载</title>
+  <style>
+    img {
+      max-width: 80%;
+      height: auto;
+    }
+  </style>
+  <script>
+    function downloadFile() {
+      var downloadUrl = '<%= downloadUrl %>';
+      var fileName = decodeURIComponent(downloadUrl).split('/').pop().split('_')[0]; // 提取文件名部分
+      var link = document.createElement('a');
+      link.href = downloadUrl;
+      link.download = fileName + '.webp'; // 添加文件扩展名
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+  </script>
 </head>
 
 <body>
@@ -13,6 +31,9 @@
     <p>下载链接： <a href="<%= downloadUrl %>">
         <%= downloadUrl %>
       </a></p>
+    <img src="<%= downloadUrl %>" alt="WebP预览">
+    <p>点击按钮下载：</p>
+    <button onclick="downloadFile()">下载</button>
 </body>
 
 </html>
