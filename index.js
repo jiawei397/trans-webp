@@ -65,7 +65,6 @@ const upload = multer({
 });
 
 // 处理文件上传的路由
-// 处理文件上传的路由
 app.post('/upload', upload.single('file'), async (req, res) => {
   // 获取转换率
   const quality = parseInt(req.body.quality);
