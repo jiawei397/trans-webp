@@ -67,6 +67,15 @@ const upload = multer({
 // 处理文件上传的路由
 // 处理文件上传的路由
 app.post('/upload', upload.single('file'), (req, res) => {
+  // 获取转换率
+  const quality = parseInt(req.body.quality);
+
+  // 检查转换率是否有效
+  if (isNaN(quality) || quality < 1 || quality > 100) {
+    res.status(400).send('转换率无效');
+    return;
+  }
+
   // 获取文件的MD5值
   const inputFile = path.join(__dirname, req.file.path);
   const fileData = fs.readFileSync(inputFile);
