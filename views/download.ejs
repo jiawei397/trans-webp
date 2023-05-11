@@ -34,6 +34,15 @@
     .download-button:hover {
       background-color: #45a049;
     }
+
+    .home-button {
+      padding: 10px 20px;
+      font-size: 16px;
+      background-color: #4CAF50;
+      color: #fff;
+      border: none;
+      cursor: pointer;
+    }
   </style>
   <script>
     function downloadFile() {
@@ -58,6 +67,7 @@
     <img class="preview-image" src="<%= downloadUrl %>" alt="WebP预览">
     <p>点击按钮下载：</p>
     <button class="download-button" onclick="downloadFile()">下载</button>
+    <button class="home-button" onclick="window.location.href = '/'">回到首页</button>
 </body>
 
 </html>
